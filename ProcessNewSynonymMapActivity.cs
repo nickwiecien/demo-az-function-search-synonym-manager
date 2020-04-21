@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace demo_az_function_search_synonym_manager
+namespace Demo.SearchSynonymManager
 {
     public static class ProcessNewSynonymMapActivity
     {
@@ -32,21 +32,24 @@ namespace demo_az_function_search_synonym_manager
                 .Build();
 
             // Read file
+          
             TextReader streamReader = new StreamReader(myBlob);
+            //var file = streamReader.ReadToEnd();
+
             var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
-            var records = csvReader.GetRecords<Record>();
+            var records = csvReader.GetRecords<CsvRecord>();
             
             // Build request
             var sb = new StringBuilder();
             foreach (var record in records)
             {
                 sb.Append(record.Name);
-                sb.AppendLine(record.Synonyms.Replace("|",","));
+                sb.AppendLine(record.Synonyms.Replace("|", ","));
             }
 
             var synonymMap = new SynonymMap()
             {
-                Name = "ProductNameMap",
+                Name = "productnamemap",
                 Synonyms = sb.ToString()
             };
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace demo_az_function_search_synonym_manager
+namespace Demo.SearchSynonymManager
 {
-    public class Record
+    public class CsvRecord
     {
         public string Name { get; set; }
 
