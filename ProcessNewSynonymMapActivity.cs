@@ -1,8 +1,13 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.Azure.Search;
+using Microsoft.Azure.Search.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Configuration;
@@ -26,18 +31,30 @@ namespace demo_az_function_search_synonym_manager
                 .AddEnvironmentVariables()
                 .Build();
 
-            // TODO - Read file
+            // Read file
+            TextReader streamReader = new StreamReader(myBlob);
+            var csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+            var records = csvReader.GetRecords<Record>();
+            
+            // Build request
+            var sb = new StringBuilder();
+            foreach (var record in records)
+            {
+                sb.Append(record.Name);
+                sb.AppendLine(record.Synonyms.Replace("|",","));
+            }
 
-            // TODO - Build request
+            var synonymMap = new SynonymMap()
+            {
+                Name = "ProductNameMap",
+                Synonyms = sb.ToString()
+            };
 
             // Update Azure Search
-            var request = "";
-            var url = config["AzureSearchServiceUrl"];
-            var response = await _httpClient.PutAsync(url, new StringContent(request, Encoding.UTF8, "application/json"));
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new HttpRequestException("An error occured invoking measurement service.");
-            }
+            string searchServiceName = config["SearchServiceName"];
+            string adminApiKey = config["SearchServiceAdminApiKey"];
+            SearchServiceClient serviceClient = new SearchServiceClient(searchServiceName, new SearchCredentials(adminApiKey));
+            await serviceClient.SynonymMaps.CreateOrUpdateAsync(synonymMap);
         }
     }
 }
