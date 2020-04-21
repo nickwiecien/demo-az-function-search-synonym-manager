@@ -33,7 +33,7 @@ namespace demo_az_function_search_synonym_manager
             // Update Azure Search
             var request = "";
             var url = config["AzureSearchServiceUrl"];
-            var response = await _httpClient.PostAsync(url, new StringContent(request, Encoding.UTF8, "application/json"));
+            var response = await _httpClient.PutAsync(url, new StringContent(request, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
                 throw new HttpRequestException("An error occured invoking measurement service.");
