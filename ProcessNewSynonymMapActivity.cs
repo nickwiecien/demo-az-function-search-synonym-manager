@@ -43,8 +43,10 @@ namespace Demo.SearchSynonymManager
             var sb = new StringBuilder();
             foreach (var record in records)
             {
+                sb.Append(record.Synonyms.Replace("|", ","));
+                sb.Append(" => ");
                 sb.Append(record.Name);
-                sb.AppendLine(record.Synonyms.Replace("|", ","));
+                sb.AppendLine();
             }
 
             var synonymMap = new SynonymMap()
