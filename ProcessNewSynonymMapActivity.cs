@@ -46,7 +46,7 @@ namespace Demo.SearchSynonymManager
                 sb.Append(record.Synonyms.Replace("|", ","));
                 sb.Append(" => ");
                 sb.Append(record.Name);
-                sb.AppendLine();
+                sb.Append("\n");
             }
 
             var synonymMap = new SynonymMap()
